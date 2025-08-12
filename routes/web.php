@@ -7,6 +7,8 @@ use App\Http\Controllers\Step1Controller;
 use App\Http\Controllers\Step2Controller;
 use App\Http\Controllers\ClinicAppointmentController;
 use App\Http\Controllers\GalleryController;
+use App\Http\Controllers\ClinicFieldController;
+use App\Http\Controllers\AppointmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -72,14 +74,41 @@ Route::get('/admin/clinic/{id}/download', [AdminController::class, 'downloadClin
 
 //clinic Dashboard
 Route::middleware(['auth'])->group(function () {
-    Route::get('/clinic/appointments', [ClinicAppointmentController::class, 'index'])->name('clinic.appointments.index');
-    Route::post('/clinic/appointments/store', [ClinicAppointmentController::class, 'store'])->name('clinic.appointments.store');
+    // Route::get('/clinic/appointments', [ClinicAppointmentController::class, 'index'])->name('clinic.appointments.index');
+    // Route::post('/clinic/appointments/store', [ClinicAppointmentController::class, 'store'])->name('clinic.appointments.store');
 
 
 //Gallery
     Route::get('/clinic/gallery', [GalleryController::class, 'index'])->name('clinic.gallery.index');
     Route::post('/clinic/gallery', [GalleryController::class, 'store'])->name('clinic.gallery.store');
     Route::delete('/clinic/gallery/{id}', [GalleryController::class, 'destroy'])->name('clinic.gallery.delete');
+
+
+    // Clinic field manager
+    Route::get('/clinic/fields', [ClinicFieldController::class, 'index'])->name('clinic.fields.index');
+    Route::post('/clinic/fields', [ClinicFieldController::class, 'store'])->name('clinic.fields.store');
+    Route::get('/clinic/fields/{id}/edit', [ClinicFieldController::class, 'edit'])->name('clinic.fields.edit');
+    Route::put('/clinic/fields/{id}', [ClinicFieldController::class, 'update'])->name('clinic.fields.update');
+    Route::delete('/clinic/fields/{id}', [ClinicFieldController::class, 'destroy'])->name('clinic.fields.destroy');
+
+//     Route::get('/clinics/{clinicId}/book', [AppointmentController::class, 'showBookingForm'])->name('appointments.book');
+// Route::post('/clinics/{clinicId}/book', [AppointmentController::class, 'store'])->name('appointments.store');
+
+// Route::get('/clinic/appointments', [ClinicAppointmentController::class, 'index'])->name('clinic.appointments');
+// Route::get('/clinic/appointments/{id}', [ClinicAppointmentController::class, 'show'])->name('clinic.appointments.show');
+
+// Route::get('/appointments/{id}', [AppointmentController::class, 'show'])->name('appointments.show');
+
+// Route::get('/book-appointment/{id}', [AppointmentController::class, 'showBookingForm'])->name('book.appointment');
+// Route::post('/book-appointment/{id}', [AppointmentController::class, 'storeAppointment'])->name('store.appointment');
+
+
+Route::post('/appointments/{clinic}', [AppointmentController::class, 'store'])->name('appointments.store');
+Route::get('/appointments/{id}', [AppointmentController::class, 'show'])->name('appointments.show');
+
+Route::get('clinic/appointments/preview/{clinic}', [AppointmentController::class, 'previewForm'])
+    ->name('appointments.preview');
+
 
 
 });

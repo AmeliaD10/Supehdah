@@ -25,7 +25,7 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('clinic.appointments.index') }}"
+                <a href="{{ route('clinic.fields.index') }}"
                     class="block px-4 py-3 rounded-md hover:bg-gray-700 hover:text-white transition duration-200">
                     Appointment Form
                 </a>

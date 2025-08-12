@@ -22,6 +22,11 @@
                     </div>
 
                     <div class="mb-4">
+                        <label class="block font-medium text-sm text-gray-700">Email</label>
+                        <input type="email" name="email" class="form-input w-full" required>
+                    </div>
+
+                    <div class="mb-4">
                         <label class="block font-medium text-sm text-gray-700">Contact Number</label>
                         <input type="text" name="contact_number" class="form-input w-full" required>
                     </div>
