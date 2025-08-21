@@ -7,48 +7,65 @@
 
         {{-- Main Content --}}
         <div class="flex-1 p-6">
-            <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                <h2 class="text-2xl font-semibold mb-4">Admin Settings</h2>
+            <div class="bg-white shadow-lg rounded-xl p-8">
+                <h2 class="text-3xl font-semibold text-gray-800 mb-6 border-b pb-3">⚙️ Admin Settings</h2>
 
+                {{-- Success Message --}}
                 @if(session('success'))
-                    <div class="mb-4 text-green-600">
+                    <div class="mb-6 p-4 rounded-lg bg-green-100 text-green-700 border border-green-200">
                         {{ session('success') }}
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('admin.updateSettings') }}">
+                {{-- Settings Form --}}
+                <form method="POST" action="{{ route('admin.updateSettings') }}" class="space-y-6">
                     @csrf
 
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2">Name</label>
+                    {{-- Name --}}
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Full Name</label>
                         <input name="name" type="text" value="{{ old('name', $admin->name) }}"
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                        @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            class="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-800 focus:ring-2 focus:ring-blue-400 focus:outline-none transition">
+                        @error('name') 
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p> 
+                        @enderror
                     </div>
 
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                    {{-- Email --}}
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Email Address</label>
                         <input name="email" type="email" value="{{ old('email', $admin->email) }}"
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                        @error('email') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            class="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-800 focus:ring-2 focus:ring-blue-400 focus:outline-none transition">
+                        @error('email') 
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p> 
+                        @enderror
                     </div>
 
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2">New Password</label>
+                    {{-- New Password --}}
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">New Password</label>
                         <input name="password" type="password"
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                        @error('password') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            class="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-800 focus:ring-2 focus:ring-blue-400 focus:outline-none transition">
+                        @error('password') 
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p> 
+                        @enderror
                     </div>
 
-                    <div class="mb-6">
-                        <label class="block text-gray-700 text-sm font-bold mb-2">Confirm New Password</label>
+                    {{-- Confirm Password --}}
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Confirm New Password</label>
                         <input name="password_confirmation" type="password"
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            class="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-800 focus:ring-2 focus:ring-blue-400 focus:outline-none transition">
                     </div>
 
-                    <div class="flex items-center justify-between">
+                    {{-- Action Buttons --}}
+                    <div class="flex items-center justify-end space-x-3 pt-4 border-t">
+                        <button type="reset"
+                            class="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition mt-4 ml-3 ">
+                            Reset
+                        </button>
                         <button type="submit"
-                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                            class="px-6 py-2.5 rounded-lg bg-blue-600 text-white font-medium shadow-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 transition mt-4">
                             Update Settings
                         </button>
                     </div>

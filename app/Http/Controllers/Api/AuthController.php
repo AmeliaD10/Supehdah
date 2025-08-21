@@ -1,43 +1,44 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 
 class AuthController extends Controller
 {
-    // POST /api/login
     public function login(Request $request)
     {
         $request->validate([
-           'email' => 'required|email',
-           'password' => 'required|string',
+            'email' => 'required|email',
+            'password' => 'required'
         ]);
 
         $user = User::where('email', $request->email)->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
             return response()->json([
-                'message' => 'Invalid credentials'
+                'status' => false,
+                'message' => 'Invalid email or password'
             ], 401);
         }
 
-        // create token (name can include device info)
-        $token = $user->createToken('mobile-token')->plainTextToken;
+        $token = $user->createToken('mobile_app_token')->plainTextToken;
 
         return response()->json([
-            'user' => $user,
+            'status' => true,
+            'message' => 'Login successful',
             'token' => $token,
-        ]);
+            'user' => $user
+        ], 200);
     }
 
-    // optional: logout (revoke token)
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
-        return response()->json(['message' => 'Logged out']);
+        $request->user()->tokens()->delete();
+        return response()->json(['status' => true, 'message' => 'Logged out']);
     }
 }

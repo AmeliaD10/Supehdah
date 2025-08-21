@@ -164,4 +164,99 @@ public function downloadClinicInfo($id)
         ->header('Content-Type', 'application/pdf')
         ->header('Content-Disposition', 'attachment; filename="clinic_info.pdf"');
 }
+
+public function getUserStats($type)
+{
+    if ($type === 'month') {
+        $userStats = \App\Models\User::where('role', 'user')
+            ->selectRaw('MONTH(created_at) as label, COUNT(*) as total')
+            ->groupBy('label')
+            ->orderBy('label')
+            ->pluck('total', 'label');
+
+        $clinicStats = \App\Models\User::where('role', 'clinic')
+            ->selectRaw('MONTH(created_at) as label, COUNT(*) as total')
+            ->groupBy('label')
+            ->orderBy('label')
+            ->pluck('total', 'label');
+
+        $labels = collect(range(1, 12))->map(function ($m) {
+            return date("F", mktime(0, 0, 0, $m, 1));
+        });
+    } else { // week
+        $userStats = \App\Models\User::where('role', 'user')
+            ->selectRaw('WEEK(created_at) as label, COUNT(*) as total')
+            ->groupBy('label')
+            ->orderBy('label')
+            ->pluck('total', 'label');
+
+        $clinicStats = \App\Models\User::where('role', 'clinic')
+            ->selectRaw('WEEK(created_at) as label, COUNT(*) as total')
+            ->groupBy('label')
+            ->orderBy('label')
+            ->pluck('total', 'label');
+
+        $maxWeek = now()->endOfYear()->weekOfYear;
+        $labels = collect(range(1, $maxWeek))->map(fn($w) => "Week $w");
+    }
+
+    // Normalize data (fill missing months/weeks with 0)
+    $usersData = [];
+    $clinicsData = [];
+    foreach ($labels as $i => $label) {
+        $usersData[] = $userStats->get($i + 1, 0);
+        $clinicsData[] = $clinicStats->get($i + 1, 0);
+    }
+
+    return response()->json([
+        'labels' => $labels,
+        'users' => $usersData,
+        'clinics' => $clinicsData,
+    ]);
+}
+
+// Delete a user
+public function deleteUser($id)
+{
+    $user = User::findOrFail($id);
+
+    if ($user->role === 'admin') {
+        return redirect()->back()->withErrors(['error' => 'Cannot delete an admin account.']);
+    }
+
+    $user->delete();
+    return redirect()->route('admin.usermag')->with('success', 'User deleted successfully.');
+}
+
+// Show edit form
+public function editUser($id)
+{
+    $user = User::findOrFail($id);
+    return view('admin.users.edit', compact('user'));
+}
+
+// Update user
+public function updateUser(Request $request, $id)
+{
+    $user = User::findOrFail($id);
+
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|max:255|unique:users,email,' . $id,
+        'password' => 'nullable|min:6|confirmed',
+    ]);
+
+    $user->name = $request->name;
+    $user->email = $request->email;
+
+    if ($request->filled('password')) {
+        $user->password = Hash::make($request->password);
+    }
+
+    $user->save();
+
+    return redirect()->route('admin.usermag')->with('success', 'User updated successfully.');
+}
+
+
 }
