@@ -38,6 +38,12 @@ Route::middleware(['auth'])->group(function () {
 
     // User management page
     Route::get('/admin/usermag', [AdminController::class, 'usermag'])->name('admin.usermag');
+    Route::get('/admin/user-stats/{type}', [AdminController::class, 'getUserStats']);
+    Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
+Route::get('/admin/users/{id}/edit', [AdminController::class, 'editUser'])->name('admin.users.edit');
+Route::put('/admin/users/{id}', [AdminController::class, 'updateUser'])->name('admin.users.update');
+
+
 
     Route::get('/admin/settings', [AdminController::class, 'settings'])->name('admin.settings');
     Route::post('/admin/settings', [AdminController::class, 'updateSettings'])->name('admin.updateSettings');

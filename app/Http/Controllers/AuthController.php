@@ -27,26 +27,31 @@ class AuthController extends Controller
 
         return response()->json(['user' => $user, 'token' => $token], 201);
     }
+public function login(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required'
+    ]);
 
-    public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
+    $user = User::where('email', $request->email)->first();
 
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
-        }
-
-        $token = $user->createToken('mobile-token')->plainTextToken;
-
-        return response()->json(['user' => $user, 'token' => $token]);
+    if (!$user || !Hash::check($request->password, $user->password)) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Invalid credentials'
+        ], 401);
     }
+
+    $token = $user->createToken('mobile-token')->plainTextToken;
+
+    return response()->json([
+        'success' => true,
+        'user' => $user,
+        'token' => $token
+    ]);
+}
+
 
     public function user(Request $request)
     {
@@ -58,4 +63,29 @@ class AuthController extends Controller
         $request->user()->tokens()->delete();
         return response()->json(['message' => 'Logged out']);
     }
+
+
+    public function updateProfile(Request $request)
+{
+    $user = auth()->user();
+
+    $validated = $request->validate([
+        'name' => 'sometimes|string|max:255',
+        'email' => 'sometimes|email|unique:users,email,' . $user->id,
+        'password' => 'nullable|string|min:8|confirmed',
+    ]);
+
+    if (!empty($validated['password'])) {
+        $validated['password'] = bcrypt($validated['password']);
+    } else {
+        unset($validated['password']);
+    }
+
+    $user->update($validated);
+
+    return response()->json([
+        'message' => 'Profile updated successfully',
+        'user' => $user
+    ]);
+}
 }
